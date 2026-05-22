@@ -196,7 +196,9 @@ public class Level {
 	//#############################################################################################################
 	//Your code goes here! 
 	//Please make sure you read the rubric/directions carefully and implement the solution recursively!
-	int fallingCounter = 0;
+	
+	//precondition: The player or water has to touch the a ordinary flower
+	//postcondition: It will create a water block of a specific type, depending on previous water blocks or whether it is falling.
 	private void water(int col, int row, Map map, int fullness) {
 		int nextFullness = fullness;
 		if (fullness > 1) {
@@ -242,19 +244,11 @@ public class Level {
 			Water w = new Water(col, row, tileSize, tileset.getImage("Falling_water"), this, 0);
 			map.addTile(col, row, w);
 		}
-		if (col - 1 >= 0
-			&& map.getTiles()[col - 1][row] != null
-			&& !map.getTiles()[col - 1][row].isSolid()
-			&& !(map.getTiles()[col - 1][row] instanceof Water)) {
-
+		if (col - 1 >= 0 && map.getTiles()[col - 1][row] != null && !map.getTiles()[col - 1][row].isSolid() && !(map.getTiles()[col - 1][row] instanceof Water)) {
 		water(col - 1, row, map, nextFullness);
 	}
 
-		if (col + 1 < map.getTiles().length
-				&& map.getTiles()[col + 1][row] != null
-				&& !map.getTiles()[col + 1][row].isSolid()
-				&& !(map.getTiles()[col + 1][row] instanceof Water)) {
-
+		if (col + 1 < map.getTiles().length && map.getTiles()[col + 1][row] != null && !map.getTiles()[col + 1][row].isSolid() && !(map.getTiles()[col + 1][row] instanceof Water)) {
 			water(col + 1, row, map, nextFullness);
 		}
 
