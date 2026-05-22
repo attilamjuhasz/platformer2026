@@ -196,47 +196,68 @@ public class Level {
 	//#############################################################################################################
 	//Your code goes here! 
 	//Please make sure you read the rubric/directions carefully and implement the solution recursively!
+	int fallingCounter = 0;
 	private void water(int col, int row, Map map, int fullness) {
+		int nextFullness = fullness;
+		if (fullness > 1) {
+			nextFullness = fullness - 1;
+		}
+		if (row + 1 < map.getTiles()[col].length && map.getTiles()[col][row + 1] != null && !map.getTiles()[col][row + 1].isSolid() && !(map.getTiles()[col][row + 1] instanceof Water)) {
+			Water w = new Water(col, row+1, tileSize, tileset.getImage("Falling_water"), this, 0);
+			map.addTile(col, row+1, w);
+			if (!(map.getTiles()[col][row] instanceof Water)){
+				if (fullness == 3){
+					Water w2 = new Water(col, row, tileSize, tileset.getImage("Full_water"), this, 3);
+					map.addTile(col, row, w2);
+				}
+				else if (fullness == 2){
+					Water w2 = new Water(col, row, tileSize, tileset.getImage("Half_water"), this, 2);
+					map.addTile(col, row, w2);
+				}
+				else if (fullness == 1){
+					Water w2 = new Water(col, row, tileSize, tileset.getImage("Quarter_water"), this, 1);
+					map.addTile(col, row, w2);
+				}
+			}
+			else{
+				Water w2 = new Water(col, row, tileSize, tileset.getImage("Falling_water"), this, 0);
+				map.addTile(col, row, w2);
+			}
+			water(col, row + 1, map, fullness);
+			return;
+		}
 		if (fullness == 3){
-			fullness--;
 			Water w = new Water(col, row, tileSize, tileset.getImage("Full_water"), this, 3);
 			map.addTile(col, row, w);
-			System.out.println(fullness);
 		}
-		if (map.getTiles()[col].length > row+1 && map.getTiles()[col][row+1].isSolid() == false && map.getTiles()[col][row-1] instanceof Water == false){
-			Water w = new Water(col, row, tileSize, tileset.getImage("Falling_water"), this, 0);
+		else if (fullness == 2){
+			Water w = new Water(col, row, tileSize, tileset.getImage("Half_water"), this, 2);
 			map.addTile(col, row, w);
-			System.out.println(fullness);
-			water(col, row+1, map, fullness);
+		}
+		else if (fullness == 1){
+			Water w = new Water(col, row, tileSize, tileset.getImage("Quarter_water"), this, 1);
+			map.addTile(col, row, w);
 		}
 		else{
-			if (map.getTiles().length > col-1 && map.getTiles()[col-1][row].isSolid() == false && map.getTiles()[col-1][row] instanceof Water == false){
-				if (fullness == 2){
-					Water w = new Water(col, row, tileSize, tileset.getImage("Half_water"), this, fullness);
-					System.out.println("half " + fullness);
-					map.addTile(col, row, w);
-				}
-				else{
-					Water w = new Water(col, row, tileSize, tileset.getImage("Quarter_water"), this, fullness);
-					System.out.println("quarter" + fullness);
-					map.addTile(col, row, w);
-				}
-				water(col-1, row, map, fullness);
-			}
-			if (map.getTiles().length > col+1 && map.getTiles()[col+1][row].isSolid() == false && map.getTiles()[col+1][row] instanceof Water == false){
-				if (fullness == 2){
-					Water w = new Water(col, row, tileSize, tileset.getImage("Half_water"), this, fullness);
-					System.out.println("Half " + fullness);
-					map.addTile(col, row, w);
-				}
-				else{
-					Water w = new Water(col, row, tileSize, tileset.getImage("Quarter_water"), this, fullness);
-					System.out.println("quarter " + fullness);
-					map.addTile(col, row, w);
-				}
-				water(col+1, row, map, fullness);
-			}
+			Water w = new Water(col, row, tileSize, tileset.getImage("Falling_water"), this, 0);
+			map.addTile(col, row, w);
 		}
+		if (col - 1 >= 0
+			&& map.getTiles()[col - 1][row] != null
+			&& !map.getTiles()[col - 1][row].isSolid()
+			&& !(map.getTiles()[col - 1][row] instanceof Water)) {
+
+		water(col - 1, row, map, nextFullness);
+	}
+
+		if (col + 1 < map.getTiles().length
+				&& map.getTiles()[col + 1][row] != null
+				&& !map.getTiles()[col + 1][row].isSolid()
+				&& !(map.getTiles()[col + 1][row] instanceof Water)) {
+
+			water(col + 1, row, map, nextFullness);
+		}
+
 
 	}
 
