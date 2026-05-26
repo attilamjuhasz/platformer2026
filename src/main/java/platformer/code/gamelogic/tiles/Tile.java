@@ -63,4 +63,10 @@ public class Tile{
 	public int getSize() {
 		return size;
 	}
+
+	//precondition: Must provide an image
+	//postcondition: The image variable will be defined as the provided new image
+	public void setMethod(BufferedImage image){
+		this.image = image;
+	}
 }
