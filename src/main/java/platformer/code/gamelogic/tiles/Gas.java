@@ -1,9 +1,9 @@
-package gamelogic.tiles;
+package platformer.code.gamelogic.tiles;
 
 import java.awt.image.BufferedImage;
 
-import gameengine.hitbox.RectHitbox;
-import gamelogic.level.Level;
+import platformer.code.gameengine.hitbox.RectHitbox;
+import platformer.code.gamelogic.level.Level;
 
 public class Gas extends Tile {
 	private int intensity;

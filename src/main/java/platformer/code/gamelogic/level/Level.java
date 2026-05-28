@@ -353,6 +353,12 @@ public class Level {
 	//precondition:
 	//postcondition:
 	private void addGas(int col, int row, Map map, int numSquaresToFill, ArrayList<Gas> placedThisRound) {
-     
-}	
+		Gas g = new Gas(col, row, tileSize, tileset.getImage("GasOne"), this, 3);
+		map.addTile(col, row, g);
+		numSquaresToFill--;
+		
+		if (row - 1 >= 0 && map.getTiles()[col][row - 1] != null && !map.getTiles()[col][row + 1].isSolid() && !(map.getTiles()[col][row + 1] instanceof Water)
+			Gas g1 = new Gas(col, row, tileSize, tileset.getImage("GasOne"), this, 3);
+			map.addTile(col, row-1, g1);
+	}	
 }

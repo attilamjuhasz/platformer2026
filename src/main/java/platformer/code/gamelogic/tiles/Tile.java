@@ -66,7 +66,7 @@ public class Tile{
 
 	//precondition: Must provide an image
 	//postcondition: The image variable will be defined as the provided new image
-	public void setMethod(BufferedImage image){
+	public void setImage(BufferedImage image){
 		this.image = image;
 	}
 }
