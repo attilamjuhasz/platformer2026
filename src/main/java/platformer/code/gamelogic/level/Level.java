@@ -350,8 +350,8 @@ public class Level {
 		return player;
 	}
 
-	//precondition:
-	//postcondition:
+	//precondition: The player has just touched a bent flower
+	//postcondition: Creates the amount of tiles called to create a gas cloud in the map
 	private void addGas(int col, int row, Map map, int numSquaresToFill, ArrayList<Gas> placedThisRound) {
 		Gas g = new Gas(col, row, tileSize, tileset.getImage("GasOne"), this, 3);
 		map.addTile(col, row, g);
@@ -367,22 +367,36 @@ public class Level {
 			{1, -1}
 		};
 
+		List<Integer> orderRow = new ArrayList<>();
+		List<Integer> orderCol = new ArrayList<>();
+
 		for (int i = 0; i < leLocation.length; i++){
-			if (row + leLocation[i][0] > 0 && row + leLocation[i][0] < map.getTiles().length && map.getTiles()[col + leLocation[i][1]][row + leLocation[i][0]] != null && !(map.getTiles()[col + leLocation[i][1]][row + leLocation[i][0]] instanceof Gas) && !map.getTiles()[col + leLocation[i][1]][row + leLocation[i][0]].isSolid()){
+			if (row + leLocation[i][0] >= 0 && row + leLocation[i][0] < map.getTiles()[0].length && col >= 0 && col < map.getTiles().length && map.getTiles()[col + leLocation[i][1]][row + leLocation[i][0]] != null && !(map.getTiles()[col + leLocation[i][1]][row + leLocation[i][0]] instanceof Gas) && !map.getTiles()[col + leLocation[i][1]][row + leLocation[i][0]].isSolid()){
 				Gas leG = new Gas(col + leLocation[i][1], row + leLocation[i][0], tileSize, tileset.getImage("GasOne"), this, 3);
 				map.addTile(col + leLocation[i][1], row + leLocation[i][0], leG);
+				orderRow.add(row + leLocation[i][0]);
+				orderCol.add(col + leLocation[i][1]);
 				numSquaresToFill--;
 			}
 		}
 
-		// while (numSquaresToFill > 0){
-		// 	for (int i = 0; i < leLocation.length; i++){
-		// 		if (row + leLocation[i][0] > 0 && row + leLocation[i][0] < map.getTiles().length && map.getTiles()[col + leLocation[i][1]][row + leLocation[i][0]] != null && !(map.getTiles()[col + leLocation[i][1]][row + leLocation[i][0]] instanceof Gas) && !map.getTiles()[col + leLocation[i][1]][row + leLocation[i][0]].isSolid()){
-		// 			Gas leG = new Gas(col + leLocation[i][1], row + leLocation[i][0], tileSize, tileset.getImage("GasOne"), this, 3);
-		// 			map.addTile(col + leLocation[i][1], row + leLocation[i][0], leG);
-		// 			numSquaresToFill--;
-		// 		}
-		// 	}
-		// }
+
+		while (numSquaresToFill > 0){
+			for (int k = 0; k < orderRow.size(); k++){
+				for (int i = 0; i < leLocation.length; i++){
+					if (orderRow.get(k) + leLocation[i][0] >= 0 && orderRow.get(k) + leLocation[i][0] < map.getTiles()[0].length && orderCol.get(k) >= 0 && orderCol.get(k) < map.getTiles().length && map.getTiles()[orderCol.get(k) + leLocation[i][1]][orderRow.get(k) + leLocation[i][0]] != null && !(map.getTiles()[orderCol.get(k) + leLocation[i][1]][orderRow.get(k) + leLocation[i][0]] instanceof Gas) && !map.getTiles()[orderCol.get(k) + leLocation[i][1]][orderRow.get(k) + leLocation[i][0]].isSolid()){
+						System.out.println(numSquaresToFill);
+						Gas leG = new Gas(orderCol.get(k) + leLocation[i][1], orderRow.get(k) + leLocation[i][0], tileSize, tileset.getImage("GasOne"), this, 3);
+						map.addTile(orderCol.get(k) + leLocation[i][1], orderRow.get(k) + leLocation[i][0], leG);
+						orderRow.add(orderRow.get(k) + leLocation[i][0]);
+						orderCol.add(orderCol.get(k) + leLocation[i][1]);
+						numSquaresToFill--;
+						if (numSquaresToFill <= 0){
+							return;
+						}
+					}
+				}
+	 		}
+		}
 	}	
 }
