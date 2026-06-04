@@ -151,6 +151,12 @@ public class Level {
 		throwPlayerWinEvent();
 	}
 
+	//precondition: 
+	//postcondition: 
+	public void placeHolder(){
+
+	}
+
 	public void update(float tslf) {
 		if (active) {
 			// Update the player
@@ -179,6 +185,16 @@ public class Level {
 					i--;
 				}
 			}
+
+			if (player.getCollisionMatrix()[PhysicsObject.BOT] instanceof Water)
+				//placeholder
+			if (player.getCollisionMatrix()[PhysicsObject.TOP] instanceof Water)
+				//placeholder
+			if (player.getCollisionMatrix()[PhysicsObject.LEF] instanceof Water)
+				//placeholder
+			if (player.getCollisionMatrix()[PhysicsObject.RIG] instanceof Water)
+				//placeholder
+
 
 			// Update the enemies
 			for (int i = 0; i < enemies.length; i++) {
