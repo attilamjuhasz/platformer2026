@@ -1,5 +1,7 @@
 package platformer.code.gamelogic.level;
 
+import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.util.ArrayList;
 import java.util.List;
@@ -38,6 +40,7 @@ public class Level {
 
 	private List<PlayerDieListener> dieListeners = new ArrayList<>();
 	private List<PlayerWinListener> winListeners = new ArrayList<>();
+	private List<Water> waters = new ArrayList<>();
 
 	private Mapdata mapdata;
 	private int width;
@@ -45,6 +48,10 @@ public class Level {
 	private int tileSize;
 	private Tileset tileset;
 	public static float GRAVITY = 70;
+
+	private long waterTimer = 0;
+	private long timeAmount = 5;
+	private int wMCounter = 0;
 
 	public Level(LevelData leveldata) {
 		this.leveldata = leveldata;
@@ -185,19 +192,28 @@ public class Level {
 					i--;
 				}
 			}
+			for (int i = 0; i < waters.size(); i++) {
+				if (waters.get(i).getHitbox().isIntersecting(player.getHitbox()) && wMCounter < 1) {
+					Enemy waterMonster = new Enemy(player.getX(), player.getY()-140, this);
+					enemiesList.add(waterMonster);
+					wMCounter++;
+				}
+			}
 
-			if (player.getCollisionMatrix()[PhysicsObject.BOT] instanceof Water)
-				//placeholder
-			if (player.getCollisionMatrix()[PhysicsObject.TOP] instanceof Water)
-				//placeholder
-			if (player.getCollisionMatrix()[PhysicsObject.LEF] instanceof Water)
-				//placeholder
-			if (player.getCollisionMatrix()[PhysicsObject.RIG] instanceof Water)
-				//placeholder
+
+			// if (player.getCollisionMatrix()[PhysicsObject.BOT] instanceof Water)
+			// 	//placeholder
+			// if (player.getCollisionMatrix()[PhysicsObject.TOP] instanceof Water)
+			// 	//placeholder
+			// if (player.getCollisionMatrix()[PhysicsObject.LEF] instanceof Water)
+			// 	//placeholder
+			// if (player.getCollisionMatrix()[PhysicsObject.RIG] instanceof Water)
+			// 	//placeholder
 
 
 			// Update the enemies
 			for (int i = 0; i < enemies.length; i++) {
+				
 				enemies[i].update(tslf);
 				if (player.getHitbox().isIntersecting(enemies[i].getHitbox())) {
 					onPlayerDeath();
@@ -228,36 +244,46 @@ public class Level {
 		if (row + 1 < map.getTiles()[col].length && map.getTiles()[col][row + 1] != null
 				&& !map.getTiles()[col][row + 1].isSolid() && !(map.getTiles()[col][row + 1] instanceof Water)) {
 			Water w = new Water(col, row + 1, tileSize, tileset.getImage("Falling_water"), this, 0);
+			waters.add(w);
 			map.addTile(col, row + 1, w);
 			if (!(map.getTiles()[col][row] instanceof Water)) {
 				if (fullness == 3) {
 					Water w2 = new Water(col, row, tileSize, tileset.getImage("Full_water"), this, 3);
+					waters.add(w2);
 					map.addTile(col, row, w2);
 				} else if (fullness == 2) {
 					Water w2 = new Water(col, row, tileSize, tileset.getImage("Half_water"), this, 2);
+					waters.add(w2);
 					map.addTile(col, row, w2);
 				} else if (fullness == 1) {
 					Water w2 = new Water(col, row, tileSize, tileset.getImage("Quarter_water"), this, 1);
+					waters.add(w2);
 					map.addTile(col, row, w2);
 				}
 			} else {
 				Water w2 = new Water(col, row, tileSize, tileset.getImage("Falling_water"), this, 0);
+				waters.add(w2);
 				map.addTile(col, row, w2);
 			}
 			water(col, row + 1, map, fullness);
 			return;
 		}
+
 		if (fullness == 3) {
 			Water w = new Water(col, row, tileSize, tileset.getImage("Full_water"), this, 3);
+			waters.add(w);
 			map.addTile(col, row, w);
 		} else if (fullness == 2) {
 			Water w = new Water(col, row, tileSize, tileset.getImage("Half_water"), this, 2);
+			waters.add(w);
 			map.addTile(col, row, w);
 		} else if (fullness == 1) {
 			Water w = new Water(col, row, tileSize, tileset.getImage("Quarter_water"), this, 1);
+			waters.add(w);
 			map.addTile(col, row, w);
 		} else {
 			Water w = new Water(col, row, tileSize, tileset.getImage("Falling_water"), this, 0);
+			waters.add(w);
 			map.addTile(col, row, w);
 		}
 		if (col - 1 >= 0 && map.getTiles()[col - 1][row] != null && !map.getTiles()[col - 1][row].isSolid()
@@ -269,6 +295,7 @@ public class Level {
 				&& !map.getTiles()[col + 1][row].isSolid() && !(map.getTiles()[col + 1][row] instanceof Water)) {
 			water(col + 1, row, map, nextFullness);
 		}
+		
 
 	}
 
@@ -311,9 +338,13 @@ public class Level {
 			}
 		}
 
+		g.setColor(Color.RED);
+		g.setFont(new Font("Arial", Font.BOLD, 40));
+		g.drawString((System.currentTimeMillis() - waterTimer)/1000 + "", (int)(player.getX()), (int)(player.getY()-20));
+
 		// Draw the enemies
-		for (int i = 0; i < enemies.length; i++) {
-			enemies[i].draw(g);
+		for (int i = 0; i < enemiesList.size(); i++) {
+			enemiesList.get(i).draw(g);
 		}
 
 		// Draw the player
