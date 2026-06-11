@@ -27,7 +27,6 @@ public class Level {
 
 	private LevelData leveldata;
 	private Map map;
-	private Enemy[] enemies;
 	public static Player player;
 	private Camera camera;
 
@@ -131,12 +130,8 @@ public class Level {
 			}
 
 		}
-		enemies = new Enemy[enemiesList.size()];
 		map = new Map(width, height, tileSize, tiles);
 		camera = new Camera(Main.SCREEN_WIDTH, Main.SCREEN_HEIGHT, 0, map.getFullWidth(), map.getFullHeight());
-		for (int i = 0; i < enemiesList.size(); i++) {
-			enemies[i] = new Enemy(enemiesList.get(i).getX(), enemiesList.get(i).getY(), this);
-		}
 		player = new Player(leveldata.getPlayerX() * map.getTileSize(), leveldata.getPlayerY() * map.getTileSize(),
 				this);
 		camera.setFocusedObject(player);
@@ -192,13 +187,17 @@ public class Level {
 					i--;
 				}
 			}
-			for (int i = 0; i < waters.size(); i++) {
-				if (waters.get(i).getHitbox().isIntersecting(player.getHitbox()) && wMCounter < 1) {
-					Enemy waterMonster = new Enemy(player.getX(), player.getY()-140, this);
-					enemiesList.add(waterMonster);
-					wMCounter++;
+
+			while (player.getCollisionMatrix()[PhysicsObject.BOT] instanceof Water || player.getCollisionMatrix()[PhysicsObject.TOP] instanceof Water || player.getCollisionMatrix()[PhysicsObject.LEF] instanceof Water || player.getCollisionMatrix()[PhysicsObject.RIG] instanceof Water){
+				for (int i = 0; i < waters.size(); i++) {
+					if (waters.get(i).getHitbox().isIntersecting(player.getHitbox()) && wMCounter < 1) {
+						Enemy waterMonster = new Enemy(player.getX()-100, player.getY()-140, this);
+						enemiesList.add(waterMonster);
+						wMCounter++;
+					}
 				}
 			}
+			wMCounter = 0;
 
 
 			// if (player.getCollisionMatrix()[PhysicsObject.BOT] instanceof Water)
@@ -212,10 +211,9 @@ public class Level {
 
 
 			// Update the enemies
-			for (int i = 0; i < enemies.length; i++) {
-				
-				enemies[i].update(tslf);
-				if (player.getHitbox().isIntersecting(enemies[i].getHitbox())) {
+			for (int i = 0; i < enemiesList.size(); i++) { 
+				enemiesList.get(i).update(tslf);
+				if (player.getHitbox().isIntersecting(enemiesList.get(i).getHitbox())) {
 					onPlayerDeath();
 				}
 			}
@@ -340,7 +338,7 @@ public class Level {
 
 		g.setColor(Color.RED);
 		g.setFont(new Font("Arial", Font.BOLD, 40));
-		g.drawString((System.currentTimeMillis() - waterTimer)/1000 + "", (int)(player.getX()), (int)(player.getY()-20));
+		//g.drawString((System.currentTimeMillis() - waterTimer)/1000 + "", (int)(player.getX()), (int)(player.getY()-20));
 
 		// Draw the enemies
 		for (int i = 0; i < enemiesList.size(); i++) {

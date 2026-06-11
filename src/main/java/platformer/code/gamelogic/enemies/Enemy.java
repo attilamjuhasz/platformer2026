@@ -34,7 +34,6 @@ public class Enemy extends PhysicsObject{
 	@Override
 	public void draw(Graphics g) {
 		g.drawImage(image, (int)position.x, (int)position.y, width, height, null);
-		
 		hitbox.draw(g);
 	}
 	
