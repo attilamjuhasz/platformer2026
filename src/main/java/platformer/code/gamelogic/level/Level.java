@@ -36,6 +36,7 @@ public class Level {
 
 	private ArrayList<Enemy> enemiesList = new ArrayList<>();
 	private ArrayList<Flower> flowers = new ArrayList<>();
+	private ArrayList<Enemy> waterMonsters = new ArrayList<>();
 
 	private List<PlayerDieListener> dieListeners = new ArrayList<>();
 	private List<PlayerWinListener> winListeners = new ArrayList<>();
@@ -51,6 +52,7 @@ public class Level {
 	private long waterTimer = 0;
 	private long timeAmount = 5;
 	private int wMCounter = 0;
+	private boolean wasInWater = false;
 
 	public Level(LevelData leveldata) {
 		this.leveldata = leveldata;
@@ -144,6 +146,21 @@ public class Level {
 	public void onPlayerDeath() {
 		active = false;
 		playerDead = true;
+
+		//I added
+		if (waterMonsters != null && !waterMonsters.isEmpty()) {
+			for (int i = 0; i < enemiesList.size(); i++){
+				for (int k = 0; k < waterMonsters.size(); k++){
+					if (waterMonsters.get(k).equals(enemiesList.get(i))){
+						enemiesList.remove(i);
+						waterMonsters.remove(k);
+						i--;
+						break;
+					}
+				}
+			}
+		}
+
 		throwPlayerDieEvent();
 	}
 
@@ -151,12 +168,6 @@ public class Level {
 		active = false;
 		playerWin = true;
 		throwPlayerWinEvent();
-	}
-
-	//precondition: 
-	//postcondition: 
-	public void placeHolder(){
-
 	}
 
 	public void update(float tslf) {
@@ -188,26 +199,28 @@ public class Level {
 				}
 			}
 
-			while (player.getCollisionMatrix()[PhysicsObject.BOT] instanceof Water || player.getCollisionMatrix()[PhysicsObject.TOP] instanceof Water || player.getCollisionMatrix()[PhysicsObject.LEF] instanceof Water || player.getCollisionMatrix()[PhysicsObject.RIG] instanceof Water){
-				for (int i = 0; i < waters.size(); i++) {
-					if (waters.get(i).getHitbox().isIntersecting(player.getHitbox()) && wMCounter < 1) {
-						Enemy waterMonster = new Enemy(player.getX()-100, player.getY()-140, this);
-						enemiesList.add(waterMonster);
-						wMCounter++;
-					}
+			//I added
+			boolean currInWater = false;
+			for (int i = 0; i < waters.size(); i++){
+				if (waters.get(i).getHitbox().isIntersecting(player.getHitbox())){
+					currInWater = true;
+					break;
 				}
 			}
-			wMCounter = 0;
-
-
-			// if (player.getCollisionMatrix()[PhysicsObject.BOT] instanceof Water)
-			// 	//placeholder
-			// if (player.getCollisionMatrix()[PhysicsObject.TOP] instanceof Water)
-			// 	//placeholder
-			// if (player.getCollisionMatrix()[PhysicsObject.LEF] instanceof Water)
-			// 	//placeholder
-			// if (player.getCollisionMatrix()[PhysicsObject.RIG] instanceof Water)
-			// 	//placeholder
+			if (currInWater && !wasInWater){
+				for (int i = 0; i < waters.size(); i++){
+					if (waters.get(i).getHitbox().isIntersecting(player.getHitbox())){
+						Enemy waterMonster = new Enemy(player.getX() - 100, player.getY() - 140, this);
+						enemiesList.add(waterMonster);
+						waterMonsters.add(waterMonster);
+						break;
+					}
+				}
+				wasInWater = true;
+			}
+			else if (!currInWater){
+				wasInWater = false;
+			}
 
 
 			// Update the enemies
