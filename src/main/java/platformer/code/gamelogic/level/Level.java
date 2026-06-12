@@ -181,8 +181,8 @@ public class Level {
 	}
 
 	//I added for custom
-	//precondition:
-	//postcondition:
+	//precondition: The player must touch a luckyblock on the map
+	//postcondition: The player will gain a jump boost and the lucky block will turn into a used icon
 	public void luckyBlockTouch(Tile lucky){
 		player.jumpPower = 2200;
 		tileset = GameResources.tileset;

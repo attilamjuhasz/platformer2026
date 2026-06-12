@@ -13,8 +13,8 @@ public class Luckyblock extends SolidTile{
 		this.hitbox = new RectHitbox(x *size, y*size, 0, offset, size, size);
 	}
 
-	//precondition:
-	//postcondition:
+	//precondition: A luckyblock is not null and has positions x and y
+	//postcondition: Returns a string that tells the user what kind of block they are and where
 	public String toString() {
 		return "I'm a luckyblock at "+this.position.x+" "+this.position.y;
 	}
