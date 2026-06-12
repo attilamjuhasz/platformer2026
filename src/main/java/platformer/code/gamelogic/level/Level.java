@@ -51,8 +51,11 @@ public class Level {
 	private Tileset tileset;
 	public static float GRAVITY = 70;
 
+	//I added for gas
 	private long gastimer = 0;
 	private long timeAmount = 5;
+	
+	//I added for water
 	private int wMCounter = 0;
 	private boolean wasInWater = false;
 	
