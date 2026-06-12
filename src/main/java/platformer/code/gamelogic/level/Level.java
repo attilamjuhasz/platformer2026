@@ -55,6 +55,7 @@ public class Level {
 	private long timeAmount = 5;
 	private int wMCounter = 0;
 	private boolean wasInWater = false;
+	
 
 	public Level(LevelData leveldata) {
 		this.leveldata = leveldata;
@@ -180,8 +181,12 @@ public class Level {
 	}
 
 	//I added for custom
-	public void luckyBlockTouch(){
-		player.jumpPower = 2700;
+	//precondition:
+	//postcondition:
+	public void luckyBlockTouch(Tile lucky){
+		player.jumpPower = 2200;
+		tileset = GameResources.tileset;
+		lucky.setImage(tileset.getImage("Used_Luckyblock"));
 	}
 
 	public void update(float tslf) {
@@ -222,15 +227,18 @@ public class Level {
 			// }
 
 			//I added for custom
-			if (player.getCollisionMatrix()[PhysicsObject.BOT] instanceof Luckyblock)
-				luckyBlockTouch();
-			if (player.getCollisionMatrix()[PhysicsObject.TOP] instanceof Luckyblock)
-				luckyBlockTouch();
-			if (player.getCollisionMatrix()[PhysicsObject.LEF] instanceof Luckyblock)
-				luckyBlockTouch();
-			if (player.getCollisionMatrix()[PhysicsObject.RIG] instanceof Luckyblock)
-				luckyBlockTouch();
-
+			if (player.getCollisionMatrix()[PhysicsObject.BOT] instanceof Luckyblock){
+				luckyBlockTouch(player.getCollisionMatrix()[PhysicsObject.BOT]);
+			}
+			if (player.getCollisionMatrix()[PhysicsObject.TOP] instanceof Luckyblock){
+				luckyBlockTouch(player.getCollisionMatrix()[PhysicsObject.TOP]);
+			}
+			if (player.getCollisionMatrix()[PhysicsObject.LEF] instanceof Luckyblock){
+				luckyBlockTouch(player.getCollisionMatrix()[PhysicsObject.LEF]);
+			}
+			if (player.getCollisionMatrix()[PhysicsObject.RIG] instanceof Luckyblock){
+				luckyBlockTouch(player.getCollisionMatrix()[PhysicsObject.RIG]);
+			}
 			//I added for gas
 			boolean touchingGas = false;
             for (int i = 0; i < gas.size(); i++) {

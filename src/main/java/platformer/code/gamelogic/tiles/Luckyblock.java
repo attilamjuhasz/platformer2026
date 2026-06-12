@@ -12,7 +12,16 @@ public class Luckyblock extends SolidTile{
 		int offset =(int)(level.getLevelData().getTileSize()*0.1); //hitbox is offset by 10% of the tile size
 		this.hitbox = new RectHitbox(x *size, y*size, 0, offset, size, size);
 	}
+
+	//precondition:
+	//postcondition:
 	public String toString() {
 		return "I'm a luckyblock at "+this.position.x+" "+this.position.y;
+	}
+
+	//precondition: Must provide an image
+	//postcondition: The image variable will be defined as the provided new image
+	public void setImage(BufferedImage image){
+		this.image = image;
 	}
 }

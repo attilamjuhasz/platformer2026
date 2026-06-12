@@ -24,3 +24,4 @@ tileSize=10
 21,Quarter_water,2,2
 22,Smile,3,2
 23,Luckyblock,4,2
+24,Used_Luckyblock,5,2
