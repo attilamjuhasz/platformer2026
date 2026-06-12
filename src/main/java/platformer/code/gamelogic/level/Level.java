@@ -18,6 +18,7 @@ import platformer.code.gamelogic.tiledMap.Map;
 import platformer.code.gamelogic.tiles.Flag;
 import platformer.code.gamelogic.tiles.Flower;
 import platformer.code.gamelogic.tiles.Gas;
+import platformer.code.gamelogic.tiles.Luckyblock;
 import platformer.code.gamelogic.tiles.SolidTile;
 import platformer.code.gamelogic.tiles.Spikes;
 import platformer.code.gamelogic.tiles.Tile;
@@ -41,6 +42,7 @@ public class Level {
 	private List<PlayerDieListener> dieListeners = new ArrayList<>();
 	private List<PlayerWinListener> winListeners = new ArrayList<>();
 	private List<Water> waters = new ArrayList<>();
+	private List<Gas> gas = new ArrayList<>();
 
 	private Mapdata mapdata;
 	private int width;
@@ -49,7 +51,7 @@ public class Level {
 	private Tileset tileset;
 	public static float GRAVITY = 70;
 
-	private long waterTimer = 0;
+	private long gastimer = 0;
 	private long timeAmount = 5;
 	private int wMCounter = 0;
 	private boolean wasInWater = false;
@@ -68,6 +70,13 @@ public class Level {
 	}
 
 	public void restartLevel() {
+
+		//I added for water
+		waters.clear();
+
+		//I added for gas
+		gas.clear();
+
 		int[][] values = mapdata.getValues();
 		Tile[][] tiles = new Tile[width][height];
 
@@ -127,8 +136,8 @@ public class Level {
 					tiles[x][y] = new Water(xPosition, yPosition, tileSize, tileset.getImage("Half_water"), this, 2);
 				else if (values[x][y] == 21)
 					tiles[x][y] = new Water(xPosition, yPosition, tileSize, tileset.getImage("Quarter_water"), this, 1);
-				else if (values[x][y] == 22)
-					tiles[x][y] = new SolidTile(xPosition, yPosition, tileSize, tileset.getImage("Smile"), this);
+				else if (values[x][y] == 23)
+					tiles[x][y] = new Luckyblock(xPosition, yPosition, tileSize, tileset.getImage("Luckyblock"), this);
 			}
 
 		}
@@ -147,7 +156,7 @@ public class Level {
 		active = false;
 		playerDead = true;
 
-		//I added
+		//I added for water
 		if (waterMonsters != null && !waterMonsters.isEmpty()) {
 			for (int i = 0; i < enemiesList.size(); i++){
 				for (int k = 0; k < waterMonsters.size(); k++){
@@ -168,6 +177,11 @@ public class Level {
 		active = false;
 		playerWin = true;
 		throwPlayerWinEvent();
+	}
+
+	//I added for custom
+	public void luckyBlockTouch(){
+		player.jumpPower = 2700;
 	}
 
 	public void update(float tslf) {
@@ -199,7 +213,44 @@ public class Level {
 				}
 			}
 
-			//I added
+			// for (int i = 0; i < waters.size(); i++) {
+			// 	if (waters.get(i).getHitbox().isIntersecting(player.getHitbox()) && wMCounter < 1) {
+			// 		Enemy waterMonster = new Enemy(player.getX(), player.getY()-140, this);
+			// 		enemiesList.add(waterMonster);
+			// 		wMCounter++;
+			// 	}
+			// }
+
+			//I added for custom
+			if (player.getCollisionMatrix()[PhysicsObject.BOT] instanceof Luckyblock)
+				luckyBlockTouch();
+			if (player.getCollisionMatrix()[PhysicsObject.TOP] instanceof Luckyblock)
+				luckyBlockTouch();
+			if (player.getCollisionMatrix()[PhysicsObject.LEF] instanceof Luckyblock)
+				luckyBlockTouch();
+			if (player.getCollisionMatrix()[PhysicsObject.RIG] instanceof Luckyblock)
+				luckyBlockTouch();
+
+			//I added for gas
+			boolean touchingGas = false;
+            for (int i = 0; i < gas.size(); i++) {
+                if (gas.get(i).getHitbox().isIntersecting(player.getHitbox())) {
+                    touchingGas = true;
+                    if(gastimer == 0){
+                        gastimer = System.currentTimeMillis();
+                    }
+                    else{
+                        if((System.currentTimeMillis() - gastimer) / 1000 >= timeAmount){
+                            gastimer = 0;
+							if (touchingGas){
+								onPlayerDeath();
+							}
+                        }
+                    }
+                }
+            }
+
+			//I added for water
 			boolean currInWater = false;
 			for (int i = 0; i < waters.size(); i++){
 				if (waters.get(i).getHitbox().isIntersecting(player.getHitbox())){
@@ -349,9 +400,10 @@ public class Level {
 			}
 		}
 
+		//I added for gas
 		g.setColor(Color.RED);
 		g.setFont(new Font("Arial", Font.BOLD, 40));
-		//g.drawString((System.currentTimeMillis() - waterTimer)/1000 + "", (int)(player.getX()), (int)(player.getY()-20));
+		g.drawString((System.currentTimeMillis() - gastimer)/1000 + "", (int)(player.getX()), (int)(player.getY()-20));
 
 		// Draw the enemies
 		for (int i = 0; i < enemiesList.size(); i++) {
@@ -433,6 +485,7 @@ public class Level {
 		for (int i = 0; i < leLocation.length; i++){
 			if (row + leLocation[i][0] >= 0 && row + leLocation[i][0] < map.getTiles()[0].length && col >= 0 && col < map.getTiles().length && map.getTiles()[col + leLocation[i][1]][row + leLocation[i][0]] != null && !(map.getTiles()[col + leLocation[i][1]][row + leLocation[i][0]] instanceof Gas) && !map.getTiles()[col + leLocation[i][1]][row + leLocation[i][0]].isSolid()){
 				Gas leG = new Gas(col + leLocation[i][1], row + leLocation[i][0], tileSize, tileset.getImage("GasOne"), this, 3);
+				gas.add(leG);
 				map.addTile(col + leLocation[i][1], row + leLocation[i][0], leG);
 				orderRow.add(row + leLocation[i][0]);
 				orderCol.add(col + leLocation[i][1]);
@@ -447,6 +500,7 @@ public class Level {
 					if (orderRow.get(k) + leLocation[i][0] >= 0 && orderRow.get(k) + leLocation[i][0] < map.getTiles()[0].length && orderCol.get(k) >= 0 && orderCol.get(k) < map.getTiles().length && map.getTiles()[orderCol.get(k) + leLocation[i][1]][orderRow.get(k) + leLocation[i][0]] != null && !(map.getTiles()[orderCol.get(k) + leLocation[i][1]][orderRow.get(k) + leLocation[i][0]] instanceof Gas) && !map.getTiles()[orderCol.get(k) + leLocation[i][1]][orderRow.get(k) + leLocation[i][0]].isSolid()){
 						System.out.println(numSquaresToFill);
 						Gas leG = new Gas(orderCol.get(k) + leLocation[i][1], orderRow.get(k) + leLocation[i][0], tileSize, tileset.getImage("GasOne"), this, 3);
+						gas.add(leG);
 						map.addTile(orderCol.get(k) + leLocation[i][1], orderRow.get(k) + leLocation[i][0], leG);
 						orderRow.add(orderRow.get(k) + leLocation[i][0]);
 						orderCol.add(orderCol.get(k) + leLocation[i][1]);
