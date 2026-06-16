@@ -75,6 +75,8 @@ public class Level {
 
 	public void restartLevel() {
 
+		enemiesList.clear();
+
 		//I added for water
 		waters.clear();
 
@@ -230,18 +232,10 @@ public class Level {
 			// }
 
 			//I added for custom
-			if (player.getCollisionMatrix()[PhysicsObject.BOT] instanceof Luckyblock){
-				luckyBlockTouch(player.getCollisionMatrix()[PhysicsObject.BOT]);
-			}
 			if (player.getCollisionMatrix()[PhysicsObject.TOP] instanceof Luckyblock){
 				luckyBlockTouch(player.getCollisionMatrix()[PhysicsObject.TOP]);
 			}
-			if (player.getCollisionMatrix()[PhysicsObject.LEF] instanceof Luckyblock){
-				luckyBlockTouch(player.getCollisionMatrix()[PhysicsObject.LEF]);
-			}
-			if (player.getCollisionMatrix()[PhysicsObject.RIG] instanceof Luckyblock){
-				luckyBlockTouch(player.getCollisionMatrix()[PhysicsObject.RIG]);
-			}
+
 			//I added for gas
 			boolean touchingGas = false;
             for (int i = 0; i < gas.size(); i++) {
